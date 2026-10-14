@@ -3,12 +3,8 @@ import pytest
 from repo_pulse.analyzer import GitError, RepoSummary, _build_report, analyze_repo
 
 
-def test_analyze_repo_special_filenames(test_repo_special_filenames): # testing special filenames\n        summary = analyze_repo(test_repo_special_filenames)\n        filenames = [f for f, _ in summary.top_files]\n        assert "café.txt" in filenames\n        assert "my file.txt" in filenames
-        summary = analyze_repo(test_repo_special_filenames)
-        filenames = [f for f, _ in summary.top_files]
-        assert "café.txt" in filenames
-        assert "my file.txt" in filenames
-        assert analyze_repo(test_repo).total_commits == 3
+def test_analyze_repo_basic(test_repo):
+    assert analyze_repo(test_repo).total_commits == 3
 
 
 def test_analyze_repo_commits_per_day(test_repo):

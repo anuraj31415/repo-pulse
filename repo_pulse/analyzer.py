@@ -48,7 +48,7 @@ def _has_commits(path: str) -> bool:
     return _run_git(path, "rev-parse", "--verify", "--quiet", "HEAD").returncode == 0
 
 
-def _get_commits(path: str, since: str | None) -> list[dict]:  # Updated to drop email and refs
+def _get_commits(path: str, since: str | None) -> list[dict]:
     if not _has_commits(path):
         return []
     args = ["log", f"--pretty=format:{LOG_FORMAT}"]
