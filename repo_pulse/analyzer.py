@@ -6,8 +6,8 @@ import subprocess
 from collections import Counter
 from dataclasses import dataclass, field
 
-SEP = "|||"
-LOG_FORMAT = SEP.join(["%H", "%an", "%ae", "%aI", "%D"])
+SEP = "\x1f"  # changing to unit separator
+LOG_FORMAT = SEP.join(["%H", "%an", "%aI"])  # removed unused fields
 TOP_N = 10
 
 
@@ -48,7 +48,7 @@ def _has_commits(path: str) -> bool:
     return _run_git(path, "rev-parse", "--verify", "--quiet", "HEAD").returncode == 0
 
 
-def _get_commits(path: str, since: str | None) -> list[dict]:
+def _get_commits(path: str, since: str | None) -> list[dict]:  # Updated to drop email and refs
     if not _has_commits(path):
         return []
     args = ["log", f"--pretty=format:{LOG_FORMAT}"]
@@ -58,18 +58,16 @@ def _get_commits(path: str, since: str | None) -> list[dict]:
     for line in _git(path, *args).splitlines():
         if not line:
             continue
-        hash_, name, email, date, refs = line.split(SEP, 4)
-        commits.append(
-            {"hash": hash_, "author": name, "email": email, "date": date, "refs": refs}
-        )
+        hash_, name, date = line.split(SEP, 2)
+        commits.append({"hash": hash_, "author": name, "date": date})
     return commits
 
 
 def _get_changed_files(path: str, commit_hash: str) -> list[str]:
     out = _git(
-        path, "diff-tree", "--no-commit-id", "-r", "--root", "--name-only", commit_hash
+        path, "diff-tree", "--no-commit-id", "-r", "--root", "-z", "--name-only", commit_hash
     )
-    return [line for line in out.splitlines() if line]
+    return [name for name in out.split("\0") if name]
 
 
 def _sorted_counts(counter: Counter) -> list[tuple[str, int]]:

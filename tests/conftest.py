@@ -57,3 +57,16 @@ def test_repo(tmp_path):
     _commit(repo, "Alice", "2024-01-03T09:00:00+00:00",
             {"a.txt": "3", "c.txt": "1"}, "third")
     return str(repo)
+
+
+@pytest.fixture
+def test_repo_special_filenames(tmp_path):
+    """A git repo with files that have non-ASCII names and spaces."""
+    repo = tmp_path / "test_repo_special"
+    repo.mkdir()
+    _git(repo, "init")
+    _git(repo, "config", "user.email", "test@test.com")
+    _git(repo, "config", "user.name", "Test User")
+    _commit(repo, "Alice", "2024-01-01T10:00:00+00:00",
+            {"café.txt": "cafe", "my file.txt": "space"}, "special filenames")
+    return str(repo)
