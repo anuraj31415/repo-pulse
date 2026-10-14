@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repo-pulse"
+version = "0.1.0"
+description = "Summarize a local git repository's recent activity."
+readme = "README.md"
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+repo-pulse = "repo_pulse.cli:main"
+
+[tool.setuptools]
+packages = ["repo_pulse"]
